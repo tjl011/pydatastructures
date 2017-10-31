@@ -129,6 +129,17 @@ class BST(object):
 
         raise BSTException("error key %s not present in BST" % str(key))
 
+    def inorder_traversal(self):
+        """ Performs an in-order traversal of all key, value pairings in
+            the binary search tree.
+
+            returns (key, value) tuple for each node in the tree.
+        """
+        if self.root:
+            n = self.root._get_min()
+            while n:
+                yield n.key, n.value
+                n = n._get_inorder_succ()
 
     def __update_references(self, dnode, succ=None):
         """Helper method to updates the references to the node to be deleted,
