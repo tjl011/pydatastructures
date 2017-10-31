@@ -27,6 +27,21 @@ class _BSTNode(object):
         while n.left:
             n = n.left
         return n
+    def _get_inorder_succ(self):
+        """ Returns the in order successor of node self (or None if
+            there is not an in order successor)
+        """
+
+        if self.right:
+            return self.right._get_min()
+
+        par = self.parent
+        tmp = self
+        while par and par.right == tmp:
+            tmp = par
+            par = par.parent
+        return par
+
 
 class BST(object):
     """ Implementation of a binary search tree.
