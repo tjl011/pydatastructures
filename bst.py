@@ -51,6 +51,20 @@ class BST(object):
         self.root = None
         self.count = 0 # number of nodes in subtree
 
+    def _find_node(self, key):
+        """ Returns the _BSTNode associated with input key, or None
+            if the 'key' is not present in the BST.
+        """
+        n = self.root
+        while n:
+            if n.key == key:
+                break
+            elif n.key < key:
+                n = n.right
+            else:
+                n = n.left
+        return n
+
     def find(self, key, isExceptRaised=False):
         """ Returns the value associated with key
         """
@@ -115,8 +129,58 @@ class BST(object):
 
         raise BSTException("error key %s not present in BST" % str(key))
 
+
+    def __update_references(self, dnode, succ=None):
+        """Helper method to updates the references to the node to be deleted,
+           dnode.
+
+            Inputs
+                'dnode' - the node to be deleted
+                'succ' - dnode's inorder successor
+        """
+        par = dnode.parent
+
+        # update the parent's reference to root (if par is None, dnode is the root)
+        if par:
+            if par.left == dnode:
+                par.left = succ
+            else:
+                par.right = succ
+        else:
+            self.root = succ
+
+        # update the successor's reference to its new parent
+        if succ:
+            succ.parent = par
+
+
     def delete(self, key):
         """ Deletes the node whose key is 'key'
             Raises a BSTException if key is not present in the BST
         """
-        raise Exception("Error method 'delete' not yet implemented!")
+
+        n = self._find_node(key)
+        if n is None:
+            raise BSTException("error key %s not in BST" % str(key))
+        while n:
+            if n.left is None and n.right is None:
+                self.__update_references(n)
+                self.count -= 1
+                return
+            elif n.left is None and n.right:
+                self.__update_references(n, n.right)
+                self.count -= 1
+                return
+            elif n.left and n.right is None:
+                self.__update_references(n, n.left)
+                self.count -= 1
+                return
+            else:
+                # in order successor is min node in right child's subtree
+                succ = n.right._get_min()
+                # replace deleted node's contents with its successor
+                n.key = succ.key
+                n.value = succ.value
+                n = succ
+
+
